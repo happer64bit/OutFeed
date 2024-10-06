@@ -1,0 +1,55 @@
+import { createLazyFileRoute } from '@tanstack/react-router'
+import SettingsDrawer from '../components/SettingsDrawer'
+import { makeStyles, tokens } from '@fluentui/react-components';
+import { Field, Radio, RadioGroup } from "@fluentui/react-components";
+
+const useStyles = makeStyles({
+  root: {
+    overflow: "hidden",
+    display: "flex",
+    height: "100vh",
+    margin: 0,
+    padding: 0
+  },
+  content: {
+    flex: "1",
+    padding: "16px",
+    display: "grid",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  field: {
+    display: "flex",
+    marginTop: "4px",
+    marginLeft: "8px",
+    flexDirection: "column",
+    gridRowGap: tokens.spacingVerticalS,
+  },
+});
+
+export const Route = createLazyFileRoute('/settings')({
+  component: () => {
+    const style = useStyles();
+
+    return (
+      <div className={style.root}>
+        <SettingsDrawer isOpen />
+        <div className="p-6 space-y-5">
+          <h1 className="text-3xl font-bold">Appearance</h1>
+          <div>
+            <h2 className='text-2xl font-semibold'>Theme</h2>
+            <div>
+              <Field label="Select Theme" className='mt-2'>
+                <RadioGroup>
+                  <Radio value="apple" label="System" />
+                  <Radio value="pear" label="Light" />
+                  <Radio value="banana" label="Dark" />
+                </RadioGroup>
+              </Field>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+})
