@@ -41,8 +41,8 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook }: { 
                     </Suspense>
                 </div>
                 <div className="mb-4">
-                    <Link href='/settings'>
-                        <Button className="w-full" appearance="secondary" icon={<Settings16Regular />}>
+                    <Link to='/settings'>
+                        <Button className="w-full" appearance="secondary" icon={<Settings16Regular />} href="/settingss">
                             Settings
                         </Button>
                     </Link>

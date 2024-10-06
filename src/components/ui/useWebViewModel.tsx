@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Drawer } from "vaul";
 import React from "react";
 import { Button } from "@fluentui/react-components";
-import { ArrowSync24Regular, ArrowLeft24Regular, DocumentBulletList24Regular,  } from "@fluentui/react-icons";
+import { ArrowLeft24Regular, DocumentBulletList24Regular } from "@fluentui/react-icons";
 
 // Move DrawerComponent definition outside of the useWebViewModel function
 const DrawerComponent = React.memo(({ isOpen, handleOpenChange, iframe, url }: { isOpen: boolean, handleOpenChange: (open: boolean) => void, iframe: JSX.Element, url: URL | null }) => (

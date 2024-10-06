@@ -71,7 +71,7 @@ export const Route = createLazyFileRoute('/')({
         return (
             <div className={styles.root}>
                 <HomeDrawer isOpen={isOpen} setIsOpen={setIsOpen} createFeedFormHook={createFeedFormHook} />
-                <div className="p-6 w-full space-y-4 overflow-scroll select-none">
+                <div className="p-6 w-full space-y-4 overflow-y-scroll select-none">
                     {!isOpen && (
                         <Tooltip content="Navigation" relationship="label">
                             <Hamburger onClick={() => setIsOpen(!isOpen)} />
@@ -90,7 +90,7 @@ export const Route = createLazyFileRoute('/')({
 
                     {/* Render feed items */}
                     {feed && feed.items && feed.items.map((item: any, index: number) => (
-                        <Card key={index} className="w-full" onClick={() => openModel(item.link)}>
+                        <Card key={index} className="w-full" onClick={() => openModel(item.link)} appearance='subtle'>
                             <CardHeader
                                 className="pt-4"
                                 header={
@@ -98,7 +98,7 @@ export const Route = createLazyFileRoute('/')({
                                         <h1 className="text-3xl font-semibold">{item.title}</h1>
                                     </Body1>
                                 }
-                                description={<Caption1>{new Date(item.pubDate).toLocaleString()} · {item.link}</Caption1>}
+                                description={<Caption1 className='mt-1'>{new Date(item.pubDate).toLocaleString()} · {item.link}</Caption1>}
                             />
                             <CardFooter className="pb-4">
                                 <p className="text-base">{item.contentSnippet}</p>
