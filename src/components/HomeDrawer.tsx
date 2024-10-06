@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Add12Regular, Settings16Regular } from '@fluentui/react-icons';
 import { Link } from '@tanstack/react-router';
 import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem } from "@fluentui/react-nav-preview";
@@ -7,15 +7,34 @@ import { Button, Tooltip } from '@fluentui/react-components';
 // Memoize the Tooltip component to prevent unnecessary re-renders
 const MemoizedTooltip = React.memo(Tooltip);
 
-const MemoizedNavItem = React.memo(({ value }: { value: string }) => (
-    <NavItem value={value}>
-        RSS Feed
+const MemoizedNavItem = React.memo(({ value }: { value: any }) => (
+    <NavItem value={value.id}>
+        {value.label}
     </NavItem>
 ));
 
-export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any }) {
+export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data, isLoading }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any, data: any[], isLoading: boolean }) {
+    const [selectedValue, setSelectedValue] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!isLoading && data && data.length > 0) {
+            setSelectedValue(data[0].id); // Set the first item's id as the selected value
+        }
+    }, [isLoading, data]);
+
+    const handleNavSelection = (value: string) => {
+        setSelectedValue(value); // Update selected value on navigation
+    };
+
     return (
-        <NavDrawer open={isOpen} type="inline" defaultSelectedValue="1" className="h-screen">
+        <NavDrawer 
+            open={isOpen} 
+            type="inline" 
+            // @ts-ignore
+            selectedValue={selectedValue}
+            onSelectedValueChange={handleNavSelection}
+            className="h-screen"
+        >
             <NavDrawerHeader>
                 <div className="flex justify-between items-center">
                     <Tooltip content="Navigation" relationship="label">
@@ -26,7 +45,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook }: { 
                             icon={<Add12Regular />}
                             appearance="primary"
                             onClick={() => {
-                                createFeedFormHook.displayDialog()
+                                createFeedFormHook.displayDialog();
                             }}
                         />
                     </MemoizedTooltip>
@@ -34,20 +53,24 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook }: { 
             </NavDrawerHeader>
             <NavDrawerBody className="flex flex-col justify-between">
                 <div>
-                    <Suspense fallback={<div>Loading...</div>}>
-                        {Array(10).fill({}).map((_, index) => (
-                            <MemoizedNavItem value={index.toString()} key={index.toString()} />
-                        ))}
-                    </Suspense>
+                    {isLoading ? (
+                        <div>Loading...</div>
+                    ) : (
+                        <Suspense fallback={<div>Loading...</div>}>
+                            {data.map((value) => (
+                                <MemoizedNavItem value={value} key={value.id} />
+                            ))}
+                        </Suspense>
+                    )}
                 </div>
                 <div className="mb-4">
-                    <Link to='/settings'>
-                        <Button className="w-full" appearance="secondary" icon={<Settings16Regular />} href="/settingss">
+                    <Link to="/settings">
+                        <Button className="w-full" appearance="secondary" icon={<Settings16Regular />}>
                             Settings
                         </Button>
                     </Link>
                 </div>
             </NavDrawerBody>
         </NavDrawer>
-    )
+    );
 }

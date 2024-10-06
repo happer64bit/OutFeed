@@ -15,9 +15,7 @@ const DrawerComponent = React.memo(({ isOpen, handleOpenChange, iframe, url }: {
                     <div className="border px-6 py-1.5 mx-auto my-1 rounded-full shadow-sm">
                         {url ? <p>{url.hostname}{url.pathname}</p> : <p>Invalid URL</p>}
                     </div>
-                    <Button icon={<DocumentBulletList24Regular />} appearance="subtle" className="ml-auto">
-                        Reading Mode
-                    </Button>
+                    <Button icon={<DocumentBulletList24Regular />} appearance="subtle" className="ml-auto" />
                 </div>
                 {iframe}
             </Drawer.Content>

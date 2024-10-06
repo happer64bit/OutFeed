@@ -14,6 +14,7 @@ import {
 import { useWebViewModel } from '../components/ui/useWebViewModel';
 import useCreateFeedFormAlertDialog from '../components/ui/useCreateFeedFormAlertDialog';
 import { parseFeed } from 'htmlparser2';
+import Database from '@tauri-apps/plugin-sql';
 
 const HomeDrawer = React.lazy(() => import("../components/HomeDrawer"));
 
@@ -43,11 +44,13 @@ export const Route = createLazyFileRoute('/')({
         const [feed, setFeed] = React.useState<any>(null);
         const [loading, setLoading] = React.useState<boolean>(false);
         const createFeedFormHook = useCreateFeedFormAlertDialog();
+        const [database, setDatabase] = React.useState<Database | null>()
+        const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
+        const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
 
         const fetchFeed = async (url: string) => {
             setLoading(true);
             try {
-              console.log("PARSE")
                 // Fetch the RSS feed content as text
                 const response = await fetch(url);
                 const text = await response.text();
@@ -61,16 +64,36 @@ export const Route = createLazyFileRoute('/')({
             }
         };
 
-        // Fetch initial feed
         React.useEffect(() => {
             if (currentUrl) {
                 fetchFeed(currentUrl);
             }
-        }, [currentUrl]); // Fetch feed whenever currentUrl changes
+        }, [currentUrl]);
+
+        React.useEffect(() => {
+            initDatabase()
+        }, [])
+
+
+        React.useEffect(() => {
+            initData()
+        }, [database])
+
+        async function initDatabase() {
+            setDatabase(await Database.load("sqlite:app.db"))
+        }
+
+        async function initData() {
+            if(database) {
+                const result: any[] = await database.select("SELECT * from feed");
+                setSavedFeedList(result);
+                setIsFeedSearchLoading(false)
+            }
+        }
 
         return (
             <div className={styles.root}>
-                <HomeDrawer isOpen={isOpen} setIsOpen={setIsOpen} createFeedFormHook={createFeedFormHook} />
+                <HomeDrawer data={savedFeedList} isLoading={isFeedSearchLoading} isOpen={isOpen} setIsOpen={setIsOpen} createFeedFormHook={createFeedFormHook} />
                 <div className="p-6 w-full space-y-4 overflow-y-scroll select-none">
                     {!isOpen && (
                         <Tooltip content="Navigation" relationship="label">
@@ -112,10 +135,12 @@ export const Route = createLazyFileRoute('/')({
                     )}
                 </div>
 
-                <createFeedFormHook.Provider handleSubmit={(event) => {
-                    console.log(event);
-                    // Update URL based on user input
-                    setCurrentUrl(event.url);
+                <createFeedFormHook.Provider handleSubmit={async ({ label, url }) => {
+                    if(database) {
+                        const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [ label, url ])
+
+                        console.log(result)
+                    }
                 }} />
 
                 <Provider />

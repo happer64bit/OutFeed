@@ -10,6 +10,7 @@ import {
     Input,
     Label,
     makeStyles,
+    Spinner,
 } from "@fluentui/react-components";
 
 const useStyles = makeStyles({
@@ -33,11 +34,15 @@ export default function useCreateFeedFormAlertDialog() {
     ) {
         const [label, setLabel] = useState("");
         const [url, setUrl] = useState("");
+        const [isLoading, setIsLoading] = useState<boolean>(false);
+
         const closeDialog = () => setIsOpen(false);
 
         const onSubmit = (e: React.FormEvent) => {
             e.preventDefault();
+            setIsLoading(true)
             handleSubmit({ label, url });
+            setIsLoading(false)
             closeDialog();
         };
 
@@ -72,8 +77,13 @@ export default function useCreateFeedFormAlertDialog() {
                                 <Button appearance="secondary" onClick={closeDialog}>
                                     Close
                                 </Button>
-                                <Button type="submit" appearance="primary">
-                                    Submit
+                                <Button type="submit" appearance="primary" disabled={isLoading}>
+                                    {isLoading ? (
+                                        <>
+                                            <Spinner size="tiny" />
+                                            Loading...
+                                        </>
+                                    ) : <>Submit</>}
                                 </Button>
                             </DialogActions>
                         </DialogBody>
