@@ -13,17 +13,18 @@ const MemoizedNavItem = React.memo(({ value }: { value: any }) => (
     </NavItem>
 ));
 
-export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data, isLoading }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any, data: any[], isLoading: boolean }) {
+export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data, isLoading, onItemSelected }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any, data: any[], isLoading: boolean, onItemSelected: (id: any) => void }) {
     const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isLoading && data && data.length > 0) {
-            setSelectedValue(data[0].id); // Set the first item's id as the selected value
+            setSelectedValue(data[0].id);
         }
     }, [isLoading, data]);
 
-    const handleNavSelection = (value: string) => {
-        setSelectedValue(value); // Update selected value on navigation
+    const handleNavSelection = (value: any) => {
+        setSelectedValue(value);
+        onItemSelected(value)
     };
 
     return (
@@ -32,7 +33,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
             type="inline" 
             // @ts-ignore
             selectedValue={selectedValue}
-            onSelectedValueChange={handleNavSelection}
+            onNavItemSelect={(_, data) => handleNavSelection(data.value)}
             className="h-screen"
         >
             <NavDrawerHeader>
@@ -43,7 +44,8 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                     <MemoizedTooltip content="Add Feed" relationship="label">
                         <Button
                             icon={<Add12Regular />}
-                            appearance="primary"
+                            appearance="transparent"
+                            size='small'
                             onClick={() => {
                                 createFeedFormHook.displayDialog();
                             }}

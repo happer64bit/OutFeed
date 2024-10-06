@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
     Dialog,
     DialogSurface,
@@ -36,18 +36,20 @@ export default function useCreateFeedFormAlertDialog() {
         const [url, setUrl] = useState("");
         const [isLoading, setIsLoading] = useState<boolean>(false);
 
-        const closeDialog = () => setIsOpen(false);
+        const closeDialog = useCallback(() => setIsOpen(false), []);
+
+        const onOpenChange = useCallback(() => setIsOpen(!isOpen), [isOpen]);
 
         const onSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            setIsLoading(true)
+            setIsLoading(true);
             handleSubmit({ label, url });
-            setIsLoading(false)
+            setIsLoading(false);
             closeDialog();
         };
 
         return (
-            <Dialog modalType="alert" open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
+            <Dialog modalType="alert" open={isOpen} onOpenChange={onOpenChange}>
                 <DialogSurface aria-describedby={undefined}>
                     <form onSubmit={onSubmit}>
                         <DialogBody>

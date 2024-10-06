@@ -48,13 +48,14 @@ export const Route = createLazyFileRoute('/')({
         const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
         const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
 
+        // New state to store the selected feed label
+        const [selectedFeedLabel, setSelectedFeedLabel] = React.useState<string | null>(null);
+
         const fetchFeed = async (url: string) => {
             setLoading(true);
             try {
-                // Fetch the RSS feed content as text
                 const response = await fetch(url);
                 const text = await response.text();
-
                 const parsedFeed = parseFeed(text);
                 setFeed(parsedFeed); // Set the parsed feed
             } catch (error) {
@@ -74,7 +75,6 @@ export const Route = createLazyFileRoute('/')({
             initDatabase()
         }, [])
 
-
         React.useEffect(() => {
             initData()
         }, [database])
@@ -84,7 +84,7 @@ export const Route = createLazyFileRoute('/')({
         }
 
         async function initData() {
-            if(database) {
+            if (database) {
                 const result: any[] = await database.select("SELECT * from feed");
                 setSavedFeedList(result);
                 setIsFeedSearchLoading(false)
@@ -93,7 +93,26 @@ export const Route = createLazyFileRoute('/')({
 
         return (
             <div className={styles.root}>
-                <HomeDrawer data={savedFeedList} isLoading={isFeedSearchLoading} isOpen={isOpen} setIsOpen={setIsOpen} createFeedFormHook={createFeedFormHook} />
+                <HomeDrawer
+                    data={savedFeedList}
+                    isLoading={isFeedSearchLoading}
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    createFeedFormHook={createFeedFormHook}
+                    onItemSelected={async (id) => {
+                        if (database) {
+                            const result: any[] = await database.select("SELECT * FROM feed WHERE id = $1", [id]);
+
+                            if (result.length > 0) {
+                                const feedDetails = result[0];  // Assuming you only get one result back
+                                setCurrentUrl(feedDetails.url);  // Update the current feed URL to fetch the feed again
+                                setSelectedFeedLabel(feedDetails.label);  // Set the selected feed label
+                            } else {
+                                console.log("Feed item not found!");
+                            }
+                        }
+                    }}
+                />
                 <div className="p-6 w-full space-y-4 overflow-y-scroll select-none">
                     {!isOpen && (
                         <Tooltip content="Navigation" relationship="label">
@@ -101,7 +120,10 @@ export const Route = createLazyFileRoute('/')({
                         </Tooltip>
                     )}
                     <Body1>
-                        <h1 className="text-3xl font-bold pb-8 pt-4">Wint Khant Lin RSS</h1>
+                        {/* Display selected feed label here */}
+                        <h1 className="text-3xl font-bold pb-8 pt-4">
+                            {selectedFeedLabel ? selectedFeedLabel : "No Feed Selected"}
+                        </h1>
                     </Body1>
 
                     {/* Show loading spinner while fetching feed */}
@@ -136,10 +158,9 @@ export const Route = createLazyFileRoute('/')({
                 </div>
 
                 <createFeedFormHook.Provider handleSubmit={async ({ label, url }) => {
-                    if(database) {
-                        const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [ label, url ])
-
-                        console.log(result)
+                    if (database) {
+                        const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [label, url]);
+                        console.log(result);
                     }
                 }} />
 
