@@ -4,7 +4,6 @@ import { Link } from '@tanstack/react-router';
 import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem } from "@fluentui/react-nav-preview";
 import { Button, Tooltip } from '@fluentui/react-components';
 
-// Memoize the Tooltip component to prevent unnecessary re-renders
 const MemoizedTooltip = React.memo(Tooltip);
 
 const MemoizedNavItem = React.memo(({ value }: { value: any }) => (
@@ -67,7 +66,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                 </div>
                 <div className="mb-4">
                     <Link to="/settings">
-                        <Button className="w-full" appearance="secondary" icon={<Settings16Regular />}>
+                        <Button className="w-full" appearance="subtle" icon={<Settings16Regular />}>
                             Settings
                         </Button>
                     </Link>

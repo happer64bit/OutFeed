@@ -48,7 +48,6 @@ export const Route = createLazyFileRoute('/')({
         const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
         const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
 
-        // New state to store the selected feed label
         const [selectedFeedLabel, setSelectedFeedLabel] = React.useState<string | null>(null);
 
         const fetchFeed = async (url: string) => {
@@ -57,11 +56,11 @@ export const Route = createLazyFileRoute('/')({
                 const response = await fetch(url);
                 const text = await response.text();
                 const parsedFeed = parseFeed(text);
-                setFeed(parsedFeed); // Set the parsed feed
+                setFeed(parsedFeed);
             } catch (error) {
                 console.error("Error fetching or parsing the RSS feed:", error);
             } finally {
-                setLoading(false); // Stop loading
+                setLoading(false);
             }
         };
 
@@ -104,9 +103,9 @@ export const Route = createLazyFileRoute('/')({
                             const result: any[] = await database.select("SELECT * FROM feed WHERE id = $1", [id]);
 
                             if (result.length > 0) {
-                                const feedDetails = result[0];  // Assuming you only get one result back
-                                setCurrentUrl(feedDetails.url);  // Update the current feed URL to fetch the feed again
-                                setSelectedFeedLabel(feedDetails.label);  // Set the selected feed label
+                                const feedDetails = result[0];
+                                setCurrentUrl(feedDetails.url);
+                                setSelectedFeedLabel(feedDetails.label);
                             } else {
                                 console.log("Feed item not found!");
                             }
@@ -120,36 +119,35 @@ export const Route = createLazyFileRoute('/')({
                         </Tooltip>
                     )}
                     <Body1>
-                        {/* Display selected feed label here */}
                         <h1 className="text-3xl font-bold pb-8 pt-4">
                             {selectedFeedLabel ? selectedFeedLabel : "No Feed Selected"}
                         </h1>
                     </Body1>
 
-                    {/* Show loading spinner while fetching feed */}
-                    {loading && (
+                    {loading ? (
                         <div className="flex justify-center items-center h-64">
                             <Spinner />
                         </div>
+                    ) : (
+                        <>
+                            {feed && feed.items && feed.items.map((item: any, index: number) => (
+                                <Card key={index} className="w-full" onClick={() => openModel(item.link)} appearance='subtle'>
+                                    <CardHeader
+                                        className="pt-4"
+                                        header={
+                                            <Body1>
+                                                <h1 className="text-3xl font-semibold">{item.title}</h1>
+                                            </Body1>
+                                        }
+                                        description={<Caption1 className='mt-1'>{new Date(item.pubDate).toLocaleString()} · {item.link}</Caption1>}
+                                    />
+                                    <CardFooter className="pb-4">
+                                        <p className="text-base">{item.contentSnippet}</p>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </>
                     )}
-
-                    {/* Render feed items */}
-                    {feed && feed.items && feed.items.map((item: any, index: number) => (
-                        <Card key={index} className="w-full" onClick={() => openModel(item.link)} appearance='subtle'>
-                            <CardHeader
-                                className="pt-4"
-                                header={
-                                    <Body1>
-                                        <h1 className="text-3xl font-semibold">{item.title}</h1>
-                                    </Body1>
-                                }
-                                description={<Caption1 className='mt-1'>{new Date(item.pubDate).toLocaleString()} · {item.link}</Caption1>}
-                            />
-                            <CardFooter className="pb-4">
-                                <p className="text-base">{item.contentSnippet}</p>
-                            </CardFooter>
-                        </Card>
-                    ))}
 
                     {/* Handle empty feed case */}
                     {!loading && feed && feed.items && feed.items.length === 0 && (
