@@ -40,7 +40,7 @@ export const Route = createLazyFileRoute('/')({
         const [isOpen, setIsOpen] = React.useState(true);
         const styles = useStyles();
         const { Provider, openModel } = useWebViewModel();
-        const [currentUrl, setCurrentUrl] = React.useState<string | null>("https://wintkhantlin.vercel.app/rss.xml");
+        const [currentUrl, setCurrentUrl] = React.useState<string | null>(null);
         const [feed, setFeed] = React.useState<any>(null);
         const [loading, setLoading] = React.useState<boolean>(false);
         const createFeedFormHook = useCreateFeedFormAlertDialog();
@@ -86,6 +86,8 @@ export const Route = createLazyFileRoute('/')({
             if (database) {
                 const result: any[] = await database.select("SELECT * from feed");
                 setSavedFeedList(result);
+                setSelectedFeedLabel(result[0].label)
+                setCurrentUrl(result[0].url)
                 setIsFeedSearchLoading(false)
             }
         }
@@ -101,10 +103,12 @@ export const Route = createLazyFileRoute('/')({
                     onItemSelected={async (id) => {
                         if (database) {
                             const result: any[] = await database.select("SELECT * FROM feed WHERE id = $1", [id]);
-
+                            
                             if (result.length > 0) {
                                 const feedDetails = result[0];
+
                                 setCurrentUrl(feedDetails.url);
+                                
                                 setSelectedFeedLabel(feedDetails.label);
                             } else {
                                 console.log("Feed item not found!");
@@ -112,20 +116,20 @@ export const Route = createLazyFileRoute('/')({
                         }
                     }}
                 />
-                <div className="p-6 space-y-4 overflow-y-scroll select-none w-fit">
+                <div className="p-6 space-y-4 overflow-y-scroll select-none w-fit animate-in fade-in-70 slide-in-from-bottom-8">
                     {!isOpen && (
                         <Tooltip content="Navigation" relationship="label">
                             <Hamburger onClick={() => setIsOpen(!isOpen)} />
                         </Tooltip>
                     )}
                     <Body1>
-                        <h1 className="text-3xl font-bold pb-8 pt-4">
-                            {selectedFeedLabel ? selectedFeedLabel : "No Feed Selected"}
+                        <h1 className="text-3xl font-bold pb-2 pt-4">
+                            {selectedFeedLabel != null ? selectedFeedLabel : "No Feed Selected"}
                         </h1>
                     </Body1>
 
                     {loading ? (
-                        <div className="flex justify-center items-center h-64">
+                        <div className="flex justify-center items-center h-60 w-full">
                             <Spinner />
                         </div>
                     ) : (

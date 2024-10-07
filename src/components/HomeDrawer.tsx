@@ -6,6 +6,10 @@ import { Button, Tooltip } from '@fluentui/react-components';
 
 const MemoizedTooltip = React.memo(Tooltip);
 
+const MemoizedHamburger = React.memo(({ onClick }: { onClick: () => void }) => (
+    <Hamburger onClick={onClick} />
+));
+
 const MemoizedNavItem = React.memo(({ value }: { value: any }) => (
     <NavItem value={value.id}>
         {value.label}
@@ -37,9 +41,9 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
         >
             <NavDrawerHeader>
                 <div className="flex justify-between items-center">
-                    <Tooltip content="Navigation" relationship="label">
-                        <Hamburger onClick={() => setIsOpen(!isOpen)} />
-                    </Tooltip>
+                    <MemoizedTooltip content="Navigation" relationship="label">
+                        <MemoizedHamburger onClick={() => setIsOpen(!isOpen)} />
+                    </MemoizedTooltip>
                     <h1 className="text-lg font-semibold">Home</h1>
                     <MemoizedTooltip content="Add Feed" relationship="label">
                         <Button

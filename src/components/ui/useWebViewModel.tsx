@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Drawer } from "vaul";
 import React from "react";
 import { Button, Tooltip } from "@fluentui/react-components";
-import { ArrowLeft24Regular, DocumentBulletList24Regular, LockClosed24Regular, LockOpen24Regular } from "@fluentui/react-icons";
+import { ArrowLeft24Regular, LockClosed24Regular, LockOpen24Regular, Open24Filled } from "@fluentui/react-icons";
 
 // Move DrawerComponent definition outside of the useWebViewModel function
 const DrawerComponent = React.memo(({ isOpen, handleOpenChange, iframe, url }: { isOpen: boolean, handleOpenChange: (open: boolean) => void, iframe: JSX.Element, url: URL | null }) => (
@@ -18,7 +18,11 @@ const DrawerComponent = React.memo(({ isOpen, handleOpenChange, iframe, url }: {
                         {url?.protocol == "https:" ? <LockClosed24Regular /> : <LockOpen24Regular />}
                         {url ? <p>{url.hostname}{url.pathname}</p> : <p>Invalid URL</p>}
                     </div>
-                    <Button icon={<DocumentBulletList24Regular />} appearance="subtle" className="ml-auto" />
+                    {url && (    
+                        <Tooltip content={"Open In Browser"} relationship="label">
+                            <Button icon={<Open24Filled />} appearance="subtle" className="ml-auto" target="_blank" href={url.toString()} as="a"/>
+                        </Tooltip>
+                    )}
                 </div>
                 {iframe}
             </Drawer.Content>
