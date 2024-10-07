@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { Add12Regular, Settings16Regular } from '@fluentui/react-icons';
 import { Link } from '@tanstack/react-router';
-import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem } from "@fluentui/react-nav-preview";
+import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader } from "@fluentui/react-nav-preview";
 import { Button, Tooltip } from '@fluentui/react-components';
 
 const MemoizedTooltip = React.memo(Tooltip);
@@ -40,6 +40,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                     <Tooltip content="Navigation" relationship="label">
                         <Hamburger onClick={() => setIsOpen(!isOpen)} />
                     </Tooltip>
+                    <h1 className="text-lg font-semibold">Home</h1>
                     <MemoizedTooltip content="Add Feed" relationship="label">
                         <Button
                             icon={<Add12Regular />}
@@ -58,6 +59,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                         <div>Loading...</div>
                     ) : (
                         <Suspense fallback={<div>Loading...</div>}>
+                            <NavSectionHeader>Feed</NavSectionHeader>
                             {data.map((value) => (
                                 <MemoizedNavItem value={value} key={value.id} />
                             ))}

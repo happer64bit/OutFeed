@@ -112,7 +112,7 @@ export const Route = createLazyFileRoute('/')({
                         }
                     }}
                 />
-                <div className="p-6 w-full space-y-4 overflow-y-scroll select-none">
+                <div className="p-6 space-y-4 overflow-y-scroll select-none w-fit">
                     {!isOpen && (
                         <Tooltip content="Navigation" relationship="label">
                             <Hamburger onClick={() => setIsOpen(!isOpen)} />
@@ -141,7 +141,7 @@ export const Route = createLazyFileRoute('/')({
                                         }
                                         description={<Caption1 className='mt-1'>{new Date(item.pubDate).toLocaleString()} · {item.link}</Caption1>}
                                     />
-                                    <CardFooter className="pb-4">
+                                    <CardFooter className="pb-3">
                                         <p className="text-base">{item.contentSnippet}</p>
                                     </CardFooter>
                                 </Card>
