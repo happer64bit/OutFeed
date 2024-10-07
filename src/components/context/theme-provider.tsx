@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { FluentProvider, teamsDarkTheme, webLightTheme } from '@fluentui/react-components';
 
 type Theme = 'dark' | 'light' | 'system';
@@ -48,15 +48,17 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
-  const value = {
+  const value = useMemo(() => ({
     theme,
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
       setTheme(theme);
     },
-  };
+  }), [theme, storageKey]);
 
-  const appliedTheme = theme === 'dark' ? teamsDarkTheme : webLightTheme;
+  const appliedTheme = useMemo(() => (
+    theme === 'dark' ? teamsDarkTheme : webLightTheme
+  ), [theme]);
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

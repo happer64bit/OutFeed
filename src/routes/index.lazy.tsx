@@ -8,7 +8,6 @@ import {
     CardFooter,
     CardHeader,
     makeStyles,
-    Tooltip,
     Spinner
 } from "@fluentui/react-components";
 import { useWebViewModel } from '../components/ui/useWebViewModel';
@@ -17,6 +16,7 @@ import { parseFeed } from 'htmlparser2';
 import Database from '@tauri-apps/plugin-sql';
 import useBasicDialog from '../components/ui/useBasicDialog';
 import z from 'zod';
+import { fetch } from "@tauri-apps/plugin-http"
 
 const HomeDrawer = React.lazy(() => import("../components/HomeDrawer"));
 
@@ -46,13 +46,13 @@ export const Route = createLazyFileRoute('/')({
         const [feed, setFeed] = React.useState<any>(null);
         const [loading, setLoading] = React.useState<boolean>(false);
         const createFeedFormHook = useCreateFeedFormAlertDialog();
-        const [database, setDatabase] = React.useState<Database | null>()
+        const [database, setDatabase] = React.useState<Database | null>();
         const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
         const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
         const { BasicDialogProvider, showDialog } = useBasicDialog();
-
         const [selectedFeedLabel, setSelectedFeedLabel] = React.useState<string | null>(null);
 
+        // Fetch the feed data from the specified URL
         const fetchFeed = async (url: string) => {
             setLoading(true);
             try {
@@ -73,29 +73,37 @@ export const Route = createLazyFileRoute('/')({
             }
         }, [currentUrl]);
 
+        // Initialize the database and load initial data
         React.useEffect(() => {
-            initDatabase()
-        }, [])
+            initDatabase();
+        }, []);
 
         React.useEffect(() => {
-            initData()
-        }, [database])
+            initData();
+        }, [database]);
 
         async function initDatabase() {
-            setDatabase(await Database.load("sqlite:app.db"))
+            setDatabase(await Database.load("sqlite:app.db"));
         }
 
         async function initData() {
             if (database) {
-                const result: any[] = await database.select("SELECT * from feed");
-                setSavedFeedList(result);
-                if (result.length != 0) {
-                    setSelectedFeedLabel(result[0].label)
-                    setCurrentUrl(result[0].url)
-                }
-                setIsFeedSearchLoading(false)
+                await fetchFeeds();
             }
         }
+
+        // Fetch feeds from the database and update state
+        const fetchFeeds = async () => {
+            if(database) {
+                const result: any[] = await database.select("SELECT * from feed");
+                setSavedFeedList(result);
+                setIsFeedSearchLoading(false);
+                if (result.length !== 0) {
+                    setSelectedFeedLabel(result[0].label);
+                    setCurrentUrl(result[0].url);
+                }
+            }
+        };
 
         return (
             <div className={styles.root}>
@@ -105,6 +113,12 @@ export const Route = createLazyFileRoute('/')({
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
                     createFeedFormHook={createFeedFormHook}
+                    onDelete={async (id) => {
+                        if (database) {
+                            await database.execute("DELETE FROM feed WHERE id = $1", [id]);
+                            await fetchFeeds(); // Use fetchFeeds to update savedFeedList
+                        }
+                    }}
                     onItemSelected={async (id) => {
                         if (database) {
                             const result: any[] = await database.select("SELECT * FROM feed WHERE id = $1", [id]);
@@ -113,7 +127,6 @@ export const Route = createLazyFileRoute('/')({
                                 const feedDetails = result[0];
 
                                 setCurrentUrl(feedDetails.url);
-
                                 setSelectedFeedLabel(feedDetails.label);
                             } else {
                                 console.log("Feed item not found!");
@@ -121,11 +134,9 @@ export const Route = createLazyFileRoute('/')({
                         }
                     }}
                 />
-                <div className="p-6 space-y-4 overflow-y-scroll select-none w-fit animate-in fade-in-70 slide-in-from-bottom-8">
+                <div className="p-6 space-y-4 overflow-y-scroll select-none animate-in fade-in-70 slide-in-from-bottom-8 w-full">
                     {!isOpen && (
-                        <Tooltip content="Navigation" relationship="label">
-                            <Hamburger onClick={() => setIsOpen(!isOpen)} />
-                        </Tooltip>
+                        <Hamburger onClick={() => setIsOpen(!isOpen)} />
                     )}
                     <Body1>
                         <h1 className="text-3xl font-bold pb-2 pt-4">
@@ -172,10 +183,9 @@ export const Route = createLazyFileRoute('/')({
                                 label: z.string().min(4).max(100)
                             }).parse({ url, label });
 
-                            // Insert into database if validation passes
-                            const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [label, url]);
-                            console.log(result);
-                            // You might want to refresh the feed list here
+                            await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [label, url]);
+                            await fetchFeeds(); // Use fetchFeeds to update savedFeedList
+
                         } catch (error) {
                             // Handle validation errors
                             if (error instanceof z.ZodError) {

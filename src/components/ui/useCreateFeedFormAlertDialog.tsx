@@ -30,14 +30,18 @@ export default function useCreateFeedFormAlertDialog() {
     };
 
     function Provider(
-        { handleSubmit }: { handleSubmit: (data: { label: string; url: string }) => void }
+        { handleSubmit, defaultValues = { label: "", url: "" }, title = "Create Feed" }: 
+        { 
+            handleSubmit: (data: { label: string; url: string }) => void,
+            defaultValues?: { label: string; url: string },
+            title?: string
+        }
     ) {
-        const [label, setLabel] = useState("");
-        const [url, setUrl] = useState("");
+        const [label, setLabel] = useState(defaultValues.label);
+        const [url, setUrl] = useState(defaultValues.url);
         const [isLoading, setIsLoading] = useState<boolean>(false);
 
         const closeDialog = useCallback(() => setIsOpen(false), []);
-
         const onOpenChange = useCallback(() => setIsOpen(!isOpen), [isOpen]);
 
         const onSubmit = (e: React.FormEvent) => {
@@ -53,7 +57,7 @@ export default function useCreateFeedFormAlertDialog() {
                 <DialogSurface aria-describedby={undefined}>
                     <form onSubmit={onSubmit}>
                         <DialogBody>
-                            <DialogTitle>Create Feed</DialogTitle>
+                            <DialogTitle>{title}</DialogTitle>
                             <DialogContent className={styles.content}>
                                 <Label required htmlFor={"label-input"}>
                                     Feed Label
@@ -97,6 +101,6 @@ export default function useCreateFeedFormAlertDialog() {
 
     return {
         displayDialog,
-        Provider
+        Provider,
     };
 }
