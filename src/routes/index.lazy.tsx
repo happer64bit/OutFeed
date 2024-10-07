@@ -15,6 +15,8 @@ import { useWebViewModel } from '../components/ui/useWebViewModel';
 import useCreateFeedFormAlertDialog from '../components/ui/useCreateFeedFormAlertDialog';
 import { parseFeed } from 'htmlparser2';
 import Database from '@tauri-apps/plugin-sql';
+import useBasicDialog from '../components/ui/useBasicDialog';
+import z from 'zod';
 
 const HomeDrawer = React.lazy(() => import("../components/HomeDrawer"));
 
@@ -47,6 +49,7 @@ export const Route = createLazyFileRoute('/')({
         const [database, setDatabase] = React.useState<Database | null>()
         const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
         const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
+        const { BasicDialogProvider, showDialog } = useBasicDialog();
 
         const [selectedFeedLabel, setSelectedFeedLabel] = React.useState<string | null>(null);
 
@@ -86,8 +89,10 @@ export const Route = createLazyFileRoute('/')({
             if (database) {
                 const result: any[] = await database.select("SELECT * from feed");
                 setSavedFeedList(result);
-                setSelectedFeedLabel(result[0].label)
-                setCurrentUrl(result[0].url)
+                if (result.length != 0) {
+                    setSelectedFeedLabel(result[0].label)
+                    setCurrentUrl(result[0].url)
+                }
                 setIsFeedSearchLoading(false)
             }
         }
@@ -103,12 +108,12 @@ export const Route = createLazyFileRoute('/')({
                     onItemSelected={async (id) => {
                         if (database) {
                             const result: any[] = await database.select("SELECT * FROM feed WHERE id = $1", [id]);
-                            
+
                             if (result.length > 0) {
                                 const feedDetails = result[0];
 
                                 setCurrentUrl(feedDetails.url);
-                                
+
                                 setSelectedFeedLabel(feedDetails.label);
                             } else {
                                 console.log("Feed item not found!");
@@ -161,12 +166,31 @@ export const Route = createLazyFileRoute('/')({
 
                 <createFeedFormHook.Provider handleSubmit={async ({ label, url }) => {
                     if (database) {
-                        const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [label, url]);
-                        console.log(result);
+                        try {
+                            z.object({
+                                url: z.string().url(),
+                                label: z.string().min(4).max(100)
+                            }).parse({ url, label });
+
+                            // Insert into database if validation passes
+                            const result = await database.execute("INSERT into feed (label, url) VALUES ($1, $2)", [label, url]);
+                            console.log(result);
+                            // You might want to refresh the feed list here
+                        } catch (error) {
+                            // Handle validation errors
+                            if (error instanceof z.ZodError) {
+                                const errorMessages = error.errors.map(e => e.message).join(", ");
+                                showDialog({
+                                    title: "Validation Error",
+                                    message: <Body1>{errorMessages.toString()}</Body1>
+                                });
+                            }
+                        }
                     }
                 }} />
 
                 <Provider />
+                <BasicDialogProvider />
             </div>
         );
     },

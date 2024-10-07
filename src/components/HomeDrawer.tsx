@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, Suspense, useMemo, useCallback } from 'react';
 import { Add12Regular, Settings16Regular } from '@fluentui/react-icons';
 import { Link } from '@tanstack/react-router';
 import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader } from "@fluentui/react-nav-preview";
@@ -30,6 +30,10 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
         onItemSelected(value)
     };
 
+    const memoizedAddIcon = useMemo(() => <Add12Regular />, []);
+    const memoizedSettingsIcon = useMemo(() => <Settings16Regular />, []);
+    const memoizedHamburgerClick = useCallback(() => setIsOpen(!isOpen), [isOpen, setIsOpen]);
+
     return (
         <NavDrawer 
             open={isOpen} 
@@ -42,12 +46,12 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
             <NavDrawerHeader>
                 <div className="flex justify-between items-center">
                     <MemoizedTooltip content="Navigation" relationship="label">
-                        <MemoizedHamburger onClick={() => setIsOpen(!isOpen)} />
+                        <MemoizedHamburger onClick={memoizedHamburgerClick} />
                     </MemoizedTooltip>
                     <h1 className="text-lg font-semibold">Home</h1>
                     <MemoizedTooltip content="Add Feed" relationship="label">
                         <Button
-                            icon={<Add12Regular />}
+                            icon={memoizedAddIcon}
                             appearance="transparent"
                             size='small'
                             onClick={() => {
@@ -72,7 +76,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                 </div>
                 <div className="mb-4">
                     <Link to="/settings">
-                        <Button className="w-full" appearance="subtle" icon={<Settings16Regular />}>
+                        <Button className="w-full" appearance="subtle" icon={memoizedSettingsIcon}>
                             Settings
                         </Button>
                     </Link>

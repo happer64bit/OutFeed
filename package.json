@@ -25,7 +25,8 @@
     "react-dom": "^18.2.0",
     "react-loading-iframe": "^1.1.0",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^1.0.0"
+    "vaul": "^1.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.62.0",
