@@ -5,7 +5,7 @@ import { NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader } 
 
 const SettingsDrawer = memo(({ isOpen }: { isOpen: boolean }) => {
     return (
-        <NavDrawer open={isOpen} type="inline" defaultSelectedValue="1" className="h-screen">
+        <NavDrawer open={isOpen} type="inline" defaultSelectedValue="1" className="h-screen min-w-[260px]">
             <NavDrawerHeader>
                 <div className="flex items-center gap-2">
                     <Button icon={<ArrowLeft12Regular />} appearance="subtle" onClick={() => window.history.back()} />
@@ -14,14 +14,14 @@ const SettingsDrawer = memo(({ isOpen }: { isOpen: boolean }) => {
             </NavDrawerHeader>
             <NavDrawerBody>
                 <NavSectionHeader>Appearance</NavSectionHeader>
-                <NavItem icon={<DarkTheme20Regular />} value="10">
+                <NavItem icon={<DarkTheme20Regular />} value="theme">
                     Theme
                 </NavItem>
                 <NavSectionHeader>About</NavSectionHeader>
-                <NavItem icon={<ApprovalsApp16Regular />} value="10">
+                <NavItem icon={<ApprovalsApp16Regular />} value="update">
                     Update
                 </NavItem>
-                <NavItem icon={<Document16Filled />} value="10">
+                <NavItem icon={<Document16Filled />} value="term-and-policy">
                     Term & Policy
                 </NavItem>
             </NavDrawerBody>

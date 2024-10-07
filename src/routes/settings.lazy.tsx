@@ -39,9 +39,9 @@ export const Route = createLazyFileRoute('/settings')({
         <div className="p-6 space-y-5 animate-in slide-in-from-bottom-8 fade-in-60">
           
           {/* Appearance Section */}
-          <section id="appearance">
+          <section id="appearance" className='space-y-4'>
             <h1 className="text-3xl font-bold">Appearance</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-200">
+            <p className="text-sm opacity-80">
               Customize the appearance of the app by selecting a theme. You can choose between Light, Dark, or System default, which automatically matches your device's theme settings.
             </p>
             <div>
@@ -63,14 +63,14 @@ export const Route = createLazyFileRoute('/settings')({
           {/* About Section */}
           <section id="about" className="space-y-4">
             <h1 className="text-3xl font-bold">About</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-200">
+            <p className="text-sm opacity-80">
               Learn more about the application, its terms of use, and where to download updates. Stay up-to-date by visiting the links provided below.
             </p>
 
             {/* Update Section */}
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">Update</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-200">
+              <p className="text-sm opacity-80">
                 Keep your application up to date with the latest version. We regularly release updates to enhance features, fix bugs, and ensure the best user experience.
               </p>
               <div className="flex items-center gap-4">
@@ -83,7 +83,7 @@ export const Route = createLazyFileRoute('/settings')({
             {/* Terms & Policy Section */}
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold">Terms & Policy</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-200">
+              <p className="text-sm opacity-80">
                 Review the licensing terms and policies that govern the usage of this application. We adhere to the <strong>GNU General Public License v3.0</strong>, which ensures that this software remains free and open source.
               </p>
               <div className="flex items-center gap-4">

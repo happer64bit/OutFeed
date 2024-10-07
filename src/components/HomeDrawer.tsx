@@ -41,7 +41,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
             // @ts-ignore
             selectedValue={selectedValue}
             onNavItemSelect={(_, data) => handleNavSelection(data.value)}
-            className="h-screen"
+            className="h-screen min-w-[260px]"
         >
             <NavDrawerHeader>
                 <div className="flex justify-between items-center">
