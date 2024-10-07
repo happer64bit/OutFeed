@@ -14,7 +14,7 @@ const MemoizedNavItem = React.memo(({ value, shouldShowMenu, onDelete, onEditBut
         <p className='line-clamp-1'>{value.label}</p>
         {shouldShowMenu && (
             <Menu>
-                <MenuTrigger disableButtonEnhancement>
+                <MenuTrigger>
                     <MoreVertical24Filled className='!h-5' />
                 </MenuTrigger>
                 <MenuPopover>
@@ -30,7 +30,7 @@ const MemoizedNavItem = React.memo(({ value, shouldShowMenu, onDelete, onEditBut
 
 const MemoizedButton = React.memo(Button);
 
-export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data, isLoading, onItemSelected, onDelete }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any, data: any[], isLoading: boolean, onItemSelected: (id: any) => void, onDelete: (id: any) => void }) {
+export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data, isLoading, onItemSelected, onDelete }: { isOpen: boolean, setIsOpen: (value: boolean) => void, createFeedFormHook: any, data: any[], isLoading: boolean, onItemSelected: (id: any) => void, onDelete: (id: any) => void}) {
     const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
     useEffect(() => {
@@ -85,7 +85,7 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
                 </div>
             </NavDrawerHeader>
             <NavDrawerBody className="flex flex-col justify-between space-y-2">
-                <div className='max-h-52 overflow-auto'>
+                <div className='max-h-52'>
                     {isLoading ? (
                         <div>Loading...</div>
                     ) : (
