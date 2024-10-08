@@ -4,12 +4,11 @@ import { Link } from '@tanstack/react-router';
 import { Hamburger, NavDrawer, NavDrawerBody, NavDrawerHeader, NavItem, NavSectionHeader } from "@fluentui/react-nav-preview";
 import { Button, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger } from '@fluentui/react-components';
 
-// Memoized Components
 const MemoizedHamburger = React.memo(({ onClick }: { onClick: () => void }) => (
     <Hamburger onClick={onClick} />
 ));
 
-const MemoizedNavItem = React.memo(({ value, shouldShowMenu, onDelete, onEditButtonClick }: { value: any, shouldShowMenu: boolean | undefined, onDelete: () => void, onEditButtonClick: () => void }) => (
+const MemoizedNavItem = React.memo(({ value, shouldShowMenu, onDelete }: { value: any, shouldShowMenu: boolean | undefined, onDelete: () => void }) => (
     <NavItem value={value.id} className='flex w-full items-center !justify-between'>
         <p className='line-clamp-1'>{value.label}</p>
         {shouldShowMenu && (
@@ -19,7 +18,6 @@ const MemoizedNavItem = React.memo(({ value, shouldShowMenu, onDelete, onEditBut
                 </MenuTrigger>
                 <MenuPopover>
                     <MenuList>
-                        <MenuItem as='div' onClick={onEditButtonClick}>Edit</MenuItem>
                         <MenuItem as='div' onClick={onDelete}>Delete</MenuItem>
                     </MenuList>
                 </MenuPopover>
@@ -57,60 +55,65 @@ export default function HomeDrawer({ isOpen, setIsOpen, createFeedFormHook, data
         onDelete(id);
     }, [onDelete]);
 
-    // Function to handle the "Edit" button click
-    const handleEditButtonClick = useCallback((id: any) => {
-        console.log("Edit button clicked for ID:", id);
-        createFeedFormHook.displayDialog();
-    }, [createFeedFormHook]);
+    // // Function to handle the "Edit" button click with default values (URL, label)
+    // const handleEditButtonClick = useCallback((id: any) => {
+    //     const selectedFeed = data.find(item => item.id === id);
+    //     if (selectedFeed) {
+    //         console.log(selectedFeed)
+    //         createFeedFormHook.displayDialog();
+    //     }
+    // }, [createFeedFormHook, data]);
 
     return (
-        <NavDrawer
-            open={isOpen}
-            type="inline"
-            // @ts-ignore
-            selectedValue={selectedValue}
-            onNavItemSelect={(_, data) => handleNavSelection(data.value)}
-            className="h-screen min-w-[260px]"
-        >
-            <NavDrawerHeader>
-                <div className="flex justify-between items-center">
-                    <MemoizedHamburger onClick={memoizedHamburgerClick} />
-                    <h1 className="text-lg font-semibold">Home</h1>
-                    <MemoizedButton
-                        icon={memoizedAddIcon}
-                        appearance="transparent"
-                        size='small'
-                        onClick={memoizedDisplayDialog}
-                    />
-                </div>
-            </NavDrawerHeader>
-            <NavDrawerBody className="flex flex-col justify-between space-y-2">
-                <div className='max-h-52'>
-                    {isLoading ? (
-                        <div>Loading...</div>
-                    ) : (
-                        <Suspense fallback={<div>Loading...</div>}>
-                            <NavSectionHeader>Feed</NavSectionHeader>
-                            {data.map((value) => (
-                                <MemoizedNavItem
-                                    value={value}
-                                    key={value.id}
-                                    shouldShowMenu={selectedValue == String(value.id)}
-                                    onDelete={() => handleDelete(value.id)}
-                                    onEditButtonClick={() => handleEditButtonClick(value.id)}
-                                />
-                            ))}
-                        </Suspense>
-                    )}
-                </div>
-                <div className="pb-4">
-                    <Link to="/settings">
-                        <MemoizedButton className="w-full" appearance="subtle" icon={memoizedSettingsIcon}>
-                            Settings
-                        </MemoizedButton>
-                    </Link>
-                </div>
-            </NavDrawerBody>
-        </NavDrawer>
+        <>
+            <NavDrawer
+                open={isOpen}
+                type="inline"
+                // @ts-ignore
+                selectedValue={selectedValue}
+                onNavItemSelect={(_, data) => handleNavSelection(data.value)}
+                className="h-screen min-w-[260px]"
+            >
+                <NavDrawerHeader>
+                    <div className="flex justify-between items-center">
+                        <MemoizedHamburger onClick={memoizedHamburgerClick} />
+                        <h1 className="text-lg font-semibold">Home</h1>
+                        <MemoizedButton
+                            icon={memoizedAddIcon}
+                            appearance="transparent"
+                            size='small'
+                            onClick={memoizedDisplayDialog}
+                        />
+                    </div>
+                </NavDrawerHeader>
+                <NavDrawerBody className="flex flex-col justify-between space-y-2">
+                    <div className='max-h-52'>
+                        {isLoading ? (
+                            <div>Loading...</div>
+                        ) : (
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <NavSectionHeader>Feed</NavSectionHeader>
+                                {data.map((value) => (
+                                    <MemoizedNavItem
+                                        value={value}
+                                        key={value.id}
+                                        shouldShowMenu={selectedValue == String(value.id)}
+                                        onDelete={() => handleDelete(value.id)}
+                                        // onEditButtonClick={() => handleEditButtonClick(value.id)}
+                                    />
+                                ))}
+                            </Suspense>
+                        )}
+                    </div>
+                    <div className="pb-4">
+                        <Link to="/settings">
+                            <MemoizedButton className="w-full" appearance="subtle" icon={memoizedSettingsIcon}>
+                                Settings
+                            </MemoizedButton>
+                        </Link>
+                    </div>
+                </NavDrawerBody>
+            </NavDrawer>
+        </>
     );
 }

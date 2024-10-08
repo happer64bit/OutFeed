@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function useCreateFeedFormAlertDialog() {
+export default function useFeedFormAlertDialog() {
     const styles = useStyles();
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -59,6 +59,7 @@ export default function useCreateFeedFormAlertDialog() {
                         <DialogBody>
                             <DialogTitle>{title}</DialogTitle>
                             <DialogContent className={styles.content}>
+                                {JSON.stringify(defaultValues)}
                                 <Label required htmlFor={"label-input"}>
                                     Feed Label
                                 </Label>

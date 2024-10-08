@@ -11,7 +11,7 @@ import {
     Spinner
 } from "@fluentui/react-components";
 import { useWebViewModel } from '../components/ui/useWebViewModel';
-import useCreateFeedFormAlertDialog from '../components/ui/useCreateFeedFormAlertDialog';
+import useFeedFormAlertDialog from '../components/ui/useFeedFormAlertDialog';
 import { parseFeed } from 'htmlparser2';
 import Database from '@tauri-apps/plugin-sql';
 import useBasicDialog from '../components/ui/useBasicDialog';
@@ -45,7 +45,7 @@ export const Route = createLazyFileRoute('/')({
         const [currentUrl, setCurrentUrl] = React.useState<string | null>(null);
         const [feed, setFeed] = React.useState<any>(null);
         const [loading, setLoading] = React.useState<boolean>(false);
-        const createFeedFormHook = useCreateFeedFormAlertDialog();
+        const createFeedFormHook = useFeedFormAlertDialog();
         const [database, setDatabase] = React.useState<Database | null>();
         const [savedFeedList, setSavedFeedList] = React.useState<any[]>([]);
         const [isFeedSearchLoading, setIsFeedSearchLoading] = React.useState<boolean>(true);
