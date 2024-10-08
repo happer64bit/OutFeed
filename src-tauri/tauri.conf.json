@@ -15,7 +15,6 @@
         "title": "Outfeed",
         "width": 800,
         "height": 600
-        
       }
     ],
     "security": {
@@ -31,11 +30,60 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "linux": {
+      "appimage": {
+        "files": {
+          "/usr/share/README.md": "../README.md"
+        }
+      },
+      "deb": {
+        "files": {
+          "/usr/share/README.md": "../README.md"
+        }
+      },
+      "rpm": {
+        "epoch": 0,
+        "files": {
+          "/usr/share/README.md": "../README.md"
+        },
+        "release": "1"
+      }
+    },
+    "windows": {
+      "allowDowngrades": true,
+      "webviewInstallMode": {
+        "silent": true,
+        "type": "offlineInstaller"
+      }
+    },
+    "macOS": {
+      "dmg": {
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        },
+        "windowSize": {
+          "height": 400,
+          "width": 660
+        }
+      },
+      "entitlements": "./Entitlements.plist",
+      "hardenedRuntime": true,
+      "minimumSystemVersion": "10.13"
+    },
+    "license": "GNU GENERAL PUBLIC LICENSE",
+    "licenseFile": "./../LICENSE"
   },
   "plugins": {
     "sql": {
-      "preload": ["sqlite:app.db"]
+      "preload": [
+        "sqlite:app.db"
+      ]
     }
   }
 }
